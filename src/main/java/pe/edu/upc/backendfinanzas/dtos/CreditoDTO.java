@@ -22,5 +22,4 @@ public class CreditoDTO {
     private List<Pago> pagos;
     private Indicador indicador;
     private Users cliente;
-
 }

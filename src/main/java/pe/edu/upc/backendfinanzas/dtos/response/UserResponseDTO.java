@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pe.edu.upc.backendfinanzas.dtos.RoleDTO;
-
-import java.util.List;
 
 @Data
 @Builder
@@ -25,9 +22,6 @@ public class UserResponseDTO {
     private Character gender;
     private String ruc;
     private String currencyType;
-    //private List<RoleDTO> roles;
     private String authToken;
-
-    // Token
-    private String token;
+    private String token; // Token
 }
