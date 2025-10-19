@@ -1,4 +1,4 @@
 package pe.edu.upc.backendfinanzas.services;
 
-public interface IUsersService {
+public interface IndicadorService {
 }

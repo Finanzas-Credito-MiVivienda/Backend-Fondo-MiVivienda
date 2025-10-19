@@ -1,21 +1,32 @@
 package pe.edu.upc.backendfinanzas.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
+import java.util.List;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "roles", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "rol"})})
-public class Role implements Serializable {
-    @Id
+@Table(name = "roles")
+public class Role {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id
+    @Column(name = "id", nullable = false)
+    private int id;
 
-    @Column(name = "rol",nullable = false, length = 30)
-    private String rol;
+    @Column(name = "name_rol", nullable = false, length = 20)
+    private String nameRol;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Users user;
-
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonIgnore
+    private List<Users> users;
 }

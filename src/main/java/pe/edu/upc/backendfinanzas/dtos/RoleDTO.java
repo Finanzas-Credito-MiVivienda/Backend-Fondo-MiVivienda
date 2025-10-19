@@ -1,9 +1,15 @@
 package pe.edu.upc.backendfinanzas.dtos;
 
-import pe.edu.upc.backendfinanzas.entities.Users;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RoleDTO {
-    private Long id;
-    private String rol;
-    private Users user;
+    private int id;
+    private String nameRol;
 }

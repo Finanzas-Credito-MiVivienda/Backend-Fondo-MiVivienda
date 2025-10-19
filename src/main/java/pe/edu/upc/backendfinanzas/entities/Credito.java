@@ -1,45 +1,98 @@
 package pe.edu.upc.backendfinanzas.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "creditos")
 public class Credito {
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @Column(name = "id")
     private int id;
 
-    private Double montoPrestamo;
+    // Monto Total prestado
+    @NotNull(message = "El monto prestado es obligatorio")
+    @DecimalMin(value = "0.0", inclusive = false, message = "El monto debe ser mayor que 0")
+    @Column(name = "monto_prestado", nullable = false, precision = 15, scale = 2)
+    private BigDecimal montoPrestamo;
 
-    @Enumerated(EnumType.STRING)//puede usar solo los valores establecidos en la declaración de su enum
+    // Moneda del credito
+    @NotNull(message = "La moneda es obligatoria")
+    @Enumerated(EnumType.STRING) //Puede usar solo los valores establecidos en la declaración de su enum
+    @Column(name = "moneda", nullable = false, length = 10)
     private Moneda moneda; // PEN, USD
 
+    // Tipo de tasa
+    @NotNull(message = "El tipo de tasa es obligatorio")
     @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_tasa", nullable = false, length = 15)
     private TipoTasa tipoTasa; // EFECTIVA, NOMINAL
-    private Double tasaInteres;
 
+    //Valor de la tasa de interes
+    @NotNull(message = "La tasa de interés es obligatoria")
+    @DecimalMin(value = "0.0", inclusive = false, message = "La tasa debe ser mayor que 0")
+    @Column(name = "tasa_interes", nullable = false, precision = 5, scale = 2)
+    private BigDecimal tasaInteres;
+
+    // Frecuencia de capitalizacion
+    @NotNull(message = "La capitalización es obligatoria")
     @Enumerated(EnumType.STRING)
+    @Column(name = "capitalizacion", nullable = false, length = 15)
     private Capitalizacion capitalizacion; // MENSUAL, DIARIA (si es nominal)
+
+    // Plazo en Meses del credito
+    @NotNull(message = "El plazo en meses es obligatorio")
+    @Column(name = "plazo_meses", nullable = false)
     private Integer plazoMeses;
 
+    // Frecuencia de pago
+    @NotNull(message = "La frecuencia de pago es obligatoria")
     @Enumerated(EnumType.STRING)
+    @Column(name = "frecuencia_pago", nullable = false, length = 15)
     private FrecuenciaPago frecuenciaPago; // MENSUAL, SEMESTRAL, ANUAL
 
-    @Enumerated(EnumType.STRING)
-    private PeriodoGracia periodoGracia; // NINGUNO, TOTAL, PARCIAL
+    // Fecha inicio del credito
+    @NotNull(message = "La fecha de inicio es obligatoria")
+    @Column(name = "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
-    private Double bonoBuenPagador;
+
+    // Bono del Buen Pagador
+    @NotNull(message = "El Bono del Buen Pagador es obligatorio para créditos MiVivienda")
+    @DecimalMin(value = "0.0", inclusive = false, message = "El Bono debe ser mayor que 0")
+    @Column(name = "bono_buen_pagador", nullable = false, precision = 10, scale = 2)
+    private BigDecimal bonoBuenPagador;
+
+    // Periodo de Gracia
+    @NotNull(message = "El periodo de gracia es obligatorio")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "periodo_gracia", nullable = false)
+    private PeriodoGracia periodoGracia; // NINGUNO, TOTAL, PARCIAL
+
+    // Plazo en Años del credito
+    @Column(name = "plazo_anios")
     private Integer plazoAnios;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Users cliente;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users usuario;
 
     // Relación con Inmueble
-    @ManyToOne
-    @JoinColumn(name = "inmueble_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inmueble_id", nullable = false)
     private Inmueble inmueble;
 
     // Relación con Pagos (una cuota por cada registro)
