@@ -9,7 +9,7 @@ public class CreditoDTO {
     private int id;
     private Double montoPrestamo;
     private Moneda moneda; // PEN, USD
-    private TipoTasa tipoTasa; // EFECTIVA, NOMINAL
+    private TipoTasaInteres tipoTasaInteres; // EFECTIVA, NOMINAL
     private Double tasaInteres;
     private Capitalizacion capitalizacion; // MENSUAL, DIARIA (si es nominal)
     private Integer plazoMeses;

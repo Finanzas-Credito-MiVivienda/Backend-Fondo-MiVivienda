@@ -40,7 +40,7 @@ public class Credito {
     @NotNull(message = "El tipo de tasa es obligatorio")
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_tasa", nullable = false, length = 15)
-    private TipoTasa tipoTasa; // EFECTIVA, NOMINAL
+    private TipoTasaInteres tipoTasaInteres; // EFECTIVA, NOMINAL
 
     //Valor de la tasa de interes
     @NotNull(message = "La tasa de interés es obligatoria")
@@ -54,10 +54,16 @@ public class Credito {
     @Column(name = "capitalizacion", nullable = false, length = 15)
     private Capitalizacion capitalizacion; // MENSUAL, DIARIA (si es nominal)
 
-    // Plazo en Meses del credito
-    @NotNull(message = "El plazo en meses es obligatorio")
-    @Column(name = "plazo_meses", nullable = false)
-    private Integer plazoMeses;
+    // Tipo de Plazo
+    @NotNull(message = "El tipo de plazo es obligatorio")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_plazo", nullable = false, length = 15)
+    private TipoPlazo tipoPlazo; // DIAS, MESES, ANIOS
+
+    // Plazo
+    @NotNull(message = "El plazo es obligatorio")
+    @Column(name = "plazo", nullable = false)
+    private int plazo;
 
     // Frecuencia de pago
     @NotNull(message = "La frecuencia de pago es obligatoria")
@@ -76,15 +82,16 @@ public class Credito {
     @Column(name = "bono_buen_pagador", nullable = false, precision = 10, scale = 2)
     private BigDecimal bonoBuenPagador;
 
+    // Tipo Periodo de Gracia
+    @NotNull(message = "El tipo periodo de gracia es obligatorio")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_periodo_gracia", nullable = false, length = 15)
+    private TipoPeriodoGracia tipoPeriodoGracia; // NINGUNO, TOTAL, PARCIAL
+
     // Periodo de Gracia
     @NotNull(message = "El periodo de gracia es obligatorio")
-    @Enumerated(EnumType.STRING)
     @Column(name = "periodo_gracia", nullable = false)
-    private PeriodoGracia periodoGracia; // NINGUNO, TOTAL, PARCIAL
-
-    // Plazo en Años del credito
-    @Column(name = "plazo_anios")
-    private Integer plazoAnios;
+    private int periodoGracia;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -99,7 +106,7 @@ public class Credito {
     @OneToMany(mappedBy = "credito", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pago> pagos;
 
-    // Relación con Indicadores
+    // Relación con Entidad Financiera
     @OneToOne(mappedBy = "credito", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Indicador indicador;
+    private EntidadFinanciera entidadFinanciera;
 }

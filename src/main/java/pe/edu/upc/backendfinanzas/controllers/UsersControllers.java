@@ -41,7 +41,7 @@ public class UsersControllers {
     // URL: http://localhost:8080/api/v1/users/{id}
     @Transactional(readOnly = true)
     @GetMapping("users/{id}")
-    public ResponseEntity<UserResponseDTO> getUserById(int id) {
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable int id) {
         UserResponseDTO user = usersService.getUserById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }

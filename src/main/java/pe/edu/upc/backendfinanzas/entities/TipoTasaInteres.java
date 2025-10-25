@@ -1,6 +1,6 @@
 package pe.edu.upc.backendfinanzas.entities;
 
-public enum TipoTasa {
+public enum TipoTasaInteres {
     EFECTIVA,
     NOMINAL
 }

@@ -53,8 +53,8 @@ public class Indicador {
     @Column(name = "costo_total_credito", nullable = false, precision = 15, scale = 2)
     private BigDecimal costoTotalCredito; // Costo Total Credito (CTC)
 
-    // Relación inversa hacia Crédito
+    // Relación con Pago
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "credito_id", nullable = false, unique = true)
-    private Credito credito;
+    @JoinColumn(name = "pago_id", nullable = false, unique = true)
+    private Pago pago;
 }

@@ -56,18 +56,6 @@ public class Pago {
     @Column(name = "monto_cuota", nullable = false, precision = 10, scale = 2)
     private BigDecimal montoCuota;
 
-    @NotNull(message = "El seguro de desgravamen es obligatorio")
-    @DecimalMin(value = "0.0", inclusive = true, message = "El seguro de desgravamen no puede ser negativo")
-    @Digits(integer = 10, fraction = 2, message = "El seguro de desgravamen debe tener hasta 2 decimales")
-    @Column(name = "seguro_desgravamen", nullable = false, precision = 10, scale = 2)
-    private BigDecimal seguroDesgravamen;
-
-    @NotNull(message = "El seguro de riesgo es obligatorio")
-    @DecimalMin(value = "0.0", inclusive = true, message = "El seguro de riesgo no puede ser negativo")
-    @Digits(integer = 10, fraction = 2, message = "El seguro de riesgo debe tener hasta 2 decimales")
-    @Column(name = "seguro_riesgo", nullable = false, precision = 10, scale = 2)
-    private BigDecimal seguroRiesgo;
-
     @NotNull(message = "El saldo final es obligatorio")
     @DecimalMin(value = "0.0", inclusive = true, message = "El saldo final no puede ser negativo")
     @Digits(integer = 15, fraction = 2, message = "El saldo final debe tener hasta 2 decimales")
@@ -77,7 +65,7 @@ public class Pago {
     @NotNull(message = "El tipo de período es obligatorio")
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_periodo", nullable = false, length = 20)
-    private TipoPeriodo tipoPeriodo; // NORMAL, GRACIA_TOTAL, GRACIA_PARCIAL
+    private TipoPeriodoGracia tipoPeriodoGracia; // NORMAL, GRACIA_TOTAL, GRACIA_PARCIAL
 
     // Relación inversa hacia Crédito
     @ManyToOne(fetch = FetchType.LAZY)
