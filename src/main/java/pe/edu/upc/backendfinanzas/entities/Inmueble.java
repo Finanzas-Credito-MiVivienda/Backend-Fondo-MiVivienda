@@ -42,7 +42,7 @@ public class Inmueble {
     @Column(name = "direccion", nullable = false, length = 200)
     private String direccion;
 
-    @NotBlank(message = "El tipo de vivienda es obligatorio")
+    @NotNull(message = "El tipo de vivienda es obligatorio")
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_vivienda", nullable = false, length = 50)
     private TipoVivienda tipoDeVivienda;  // CASA, DEPARTAMENTO, TERRENO

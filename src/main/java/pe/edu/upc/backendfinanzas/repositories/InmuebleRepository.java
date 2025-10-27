@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InmuebleRepository extends JpaRepository<Inmueble, Integer> {
-    List<Inmueble> findByTipo(TipoVivienda tipo);
-    //List<Inmueble> findByEstado(EstadoInmueble estado);
+    List<Inmueble> findByTipoDeVivienda(TipoVivienda tipoDeVivienda);
     Optional<Inmueble> findByDireccion(String direccion);
     List<Inmueble> findByDireccionContainingIgnoreCase(String direccion);
     List<Inmueble> findByPrecioVentaBetween(BigDecimal precioMin, BigDecimal precioMax);
