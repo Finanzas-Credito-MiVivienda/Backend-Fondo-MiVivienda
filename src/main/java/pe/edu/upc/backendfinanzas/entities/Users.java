@@ -100,7 +100,7 @@ public class Users {
     @Column(name = "enabled", nullable = false)
     private boolean enabled = true;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @JoinTable(
             name = "user_by_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),

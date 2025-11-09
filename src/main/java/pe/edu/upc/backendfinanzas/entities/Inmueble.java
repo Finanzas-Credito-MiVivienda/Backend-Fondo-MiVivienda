@@ -33,7 +33,7 @@ public class Inmueble {
     private BigDecimal precioVenta;
 
     @NotNull(message = "El departamento es obligatorio")
-    @Size(min = 5, max = 50, message = "El departamento debe tener entre 5 y 50 caracteres")
+    @Size(min = 2, max = 50, message = "El departamento debe tener entre 2 y 50 caracteres")
     @Column(name = "departamento", nullable = false, length = 50)
     private String departamento;
 
@@ -45,17 +45,25 @@ public class Inmueble {
     @NotNull(message = "El tipo de vivienda es obligatorio")
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_vivienda", nullable = false, length = 50)
-    private TipoVivienda tipoDeVivienda;  // CASA, DEPARTAMENTO, TERRENO
+    private TipoVivienda tipoVivienda;
+
+    @NotNull(message = "El estado de vivienda es obligatorio")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_vivienda", nullable = false, length = 50)
+    private EstadoVivienda estadoVivienda;
 
     @NotBlank(message = "La provincia es obligatoria")
-    @Size(min = 5, max = 50, message = "La provincia debe tener entre 5 y 50 caracteres")
+    @Size(min = 2, max = 50, message = "La provincia debe tener entre 2 y 50 caracteres")
     @Column(name = "provincia", nullable = false, length = 50)
     private String provincia;
 
     @NotBlank(message = "El distrito es obligatorio")
-    @Size(min = 5, max = 50, message = "El distrito debe tener entre 5 y 50 caracteres")
+    @Size(min = 2, max = 50, message = "El distrito debe tener entre 2 y 50 caracteres")
     @Column(name = "distrito", nullable = false, length = 50)
     private String distrito;
+
+    @Column(name = "imageUrl", nullable = false, length = 300)
+    private String imageUrl;
 
     @OneToMany(mappedBy = "inmueble", cascade = CascadeType.ALL)
     private List<Credito> creditos;

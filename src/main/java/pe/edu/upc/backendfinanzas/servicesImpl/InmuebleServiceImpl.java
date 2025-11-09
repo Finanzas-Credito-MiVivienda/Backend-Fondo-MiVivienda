@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @Service
 public class InmuebleServiceImpl implements InmuebleService {
-
     @Autowired
     private InmuebleRepository iR;
 
@@ -23,13 +22,13 @@ public class InmuebleServiceImpl implements InmuebleService {
     }
 
     @Override
-    public void insert(Inmueble inmueble) {
-        iR.save(inmueble);
+    public void insert(Inmueble ofertaInmueble) {
+        iR.save(ofertaInmueble);
     }
 
     @Override
-    public void update(Inmueble inmueble) {
-        iR.save(inmueble);
+    public void update(Inmueble ofertaInmueble) {
+        iR.save(ofertaInmueble);
     }
 
     @Override
@@ -45,7 +44,7 @@ public class InmuebleServiceImpl implements InmuebleService {
     //Buscar por tipo de vivienda
     @Override
     public List<Inmueble> listByTipo(TipoVivienda tipo) {
-        return iR.findByTipo(tipo);
+        return iR.findByTipoVivienda(tipo);
     }
 
     // Buscar por dirección exacta
@@ -119,5 +118,4 @@ public class InmuebleServiceImpl implements InmuebleService {
     public List<Inmueble> listByUbicacionGeneral(String keyword) {
         return iR.buscarPorUbicacionGeneral(keyword);
     }
-
 }

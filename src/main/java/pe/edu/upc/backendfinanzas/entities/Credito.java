@@ -25,81 +25,97 @@ public class Credito {
     private int id;
 
     // Monto Total prestado
-    @NotNull(message = "El monto prestado es obligatorio")
+    // @NotNull(message = "El monto prestado es obligatorio")
     @DecimalMin(value = "0.0", inclusive = false, message = "El monto debe ser mayor que 0")
-    @Column(name = "monto_prestado", nullable = false, precision = 15, scale = 2)
+    @Column(name = "monto_prestado", nullable = true, precision = 15, scale = 2)
     private BigDecimal montoPrestamo;
 
-    // Moneda del credito
-    @NotNull(message = "La moneda es obligatoria")
-    @Enumerated(EnumType.STRING) //Puede usar solo los valores establecidos en la declaración de su enum
-    @Column(name = "moneda", nullable = false, length = 10)
-    private Moneda moneda; // PEN, USD
+    // Saldo Financiar
+    // @NotNull(message = "El saldo financiar es obligatorio")
+    @DecimalMin(value = "0.0", inclusive = false, message = "El saldo financiar debe ser mayor que 0")
+    @Column(name = "saldo_financiar", nullable = true, precision = 15, scale = 2)
+    private BigDecimal saldoFinanciar;
 
     // Tipo de tasa
     @NotNull(message = "El tipo de tasa es obligatorio")
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_tasa", nullable = false, length = 15)
+    @Column(name = "tipo_tasa", nullable = true, length = 15)
     private TipoTasaInteres tipoTasaInteres; // EFECTIVA, NOMINAL
 
     //Valor de la tasa de interes
     @NotNull(message = "La tasa de interés es obligatoria")
     @DecimalMin(value = "0.0", inclusive = false, message = "La tasa debe ser mayor que 0")
-    @Column(name = "tasa_interes", nullable = false, precision = 5, scale = 2)
+    @Column(name = "tasa_interes", nullable = true, precision = 12, scale = 7)
     private BigDecimal tasaInteres;
 
-    // Frecuencia de capitalizacion
-    @NotNull(message = "La capitalización es obligatoria")
-    @Enumerated(EnumType.STRING)
-    @Column(name = "capitalizacion", nullable = false, length = 15)
-    private Capitalizacion capitalizacion; // MENSUAL, DIARIA (si es nominal)
-
-    // Tipo de Plazo
-    @NotNull(message = "El tipo de plazo es obligatorio")
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_plazo", nullable = false, length = 15)
-    private TipoPlazo tipoPlazo; // DIAS, MESES, ANIOS
-
-    // Plazo
-    @NotNull(message = "El plazo es obligatorio")
-    @Column(name = "plazo", nullable = false)
-    private int plazo;
-
     // Frecuencia de pago
-    @NotNull(message = "La frecuencia de pago es obligatoria")
+    // @NotNull(message = "La frecuencia de pago es obligatoria")
     @Enumerated(EnumType.STRING)
-    @Column(name = "frecuencia_pago", nullable = false, length = 15)
+    @Column(name = "frecuencia_pago", nullable = true, length = 15)
     private FrecuenciaPago frecuenciaPago; // MENSUAL, SEMESTRAL, ANUAL
 
     // Fecha inicio del credito
-    @NotNull(message = "La fecha de inicio es obligatoria")
-    @Column(name = "fecha_inicio", nullable = false)
+    // @NotNull(message = "La fecha de inicio es obligatoria")
+    @Column(name = "fecha_inicio", nullable = true)
     private LocalDate fechaInicio;
 
     // Bono del Buen Pagador
-    @NotNull(message = "El Bono del Buen Pagador es obligatorio para créditos MiVivienda")
+    // @NotNull(message = "El Bono del Buen Pagador es obligatorio para créditos MiVivienda")
     @DecimalMin(value = "0.0", inclusive = false, message = "El Bono debe ser mayor que 0")
-    @Column(name = "bono_buen_pagador", nullable = false, precision = 10, scale = 2)
+    @Column(name = "bono_buen_pagador", nullable = true, precision = 10, scale = 2)
     private BigDecimal bonoBuenPagador;
 
     // Tipo Periodo de Gracia
-    @NotNull(message = "El tipo periodo de gracia es obligatorio")
+    // @NotNull(message = "El tipo periodo de gracia es obligatorio")
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_periodo_gracia", nullable = false, length = 15)
+    @Column(name = "tipo_periodo_gracia", nullable = true, length = 15)
     private TipoPeriodoGracia tipoPeriodoGracia; // NINGUNO, TOTAL, PARCIAL
 
     // Periodo de Gracia
-    @NotNull(message = "El periodo de gracia es obligatorio")
-    @Column(name = "periodo_gracia", nullable = false)
+    // @NotNull(message = "El periodo de gracia es obligatorio")
+    @Column(name = "periodo_gracia", nullable = true)
     private int periodoGracia;
 
+    // NUEVOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+    @DecimalMin(value = "0.0", inclusive = true, message = "El porcentaje debe ser mayor o igual que 0")
+    @Column(name = "pCuotalnicial", precision = 5, scale = 2)
+    private BigDecimal pCuotalnicial;
+
+    @Column(name = "numeroAnios")
+    private int numeroAnios;
+
+    @Column(name = "numeroDiasxAnio")
+    private int numeroDiasxAnio;
+
+    @DecimalMin(value = "0.0", inclusive = true, message = "El saldo debe ser mayor o igual que 0")
+    @Column(name = "saldoFinal", precision = 15, scale = 2)
+    private BigDecimal saldoFinal;
+
+    @Column(name = "nCuotasxAnio")
+    private int nCuotasxAnio;
+
+    @Column(name = "nTotalCuotas")
+    private int nTotalCuotas;
+
+    @DecimalMin(value = "0.0", inclusive = true, message = "El seguro debe ser mayor o igual que 0")
+    @Column(name = "seguroDegPerd", precision = 10, scale = 5)
+    private BigDecimal seguroDegPerd;
+
+    @DecimalMin(value = "0.0", inclusive = true, message = "El seguro debe ser mayor o igual que 0")
+    @Column(name = "seguroRiesgoPerd", precision = 10, scale = 5)
+    private BigDecimal seguroRiesgoPerd;
+
+    @DecimalMin(value = "0.0", inclusive = true, message = "El cok debe ser mayor o igual que 0")
+    @Column(name = "cok", precision = 10, scale = 5)
+    private BigDecimal cok;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     private Users usuario;
 
     // Relación con Inmueble
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inmueble_id", nullable = false)
+    @JoinColumn(name = "inmueble_id", nullable = true)
     private Inmueble inmueble;
 
     // Relación con Pagos (una cuota por cada registro)

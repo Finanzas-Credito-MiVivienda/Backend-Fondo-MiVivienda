@@ -1,7 +1,7 @@
 package pe.edu.upc.backendfinanzas.entities;
 
 public enum TipoPeriodoGracia {
-    NORMAL,
+    NINGUNO,
     GRACIA_TOTAL,
     GRACIA_PARCIAL
 }

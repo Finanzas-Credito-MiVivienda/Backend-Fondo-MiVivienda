@@ -104,6 +104,11 @@ public class UsersServiceImpl implements UsersService {
         return users;
     }
 
+    @Override
+    public Users findById(int id) {
+        return usersRepository.findById(id).orElse(null);
+    }
+
     private void validateUser(Users user) {
         if (usersRepository.existsById(user.getId())) {
             throw new ValidationException("El correo electronico ya esta registrado");

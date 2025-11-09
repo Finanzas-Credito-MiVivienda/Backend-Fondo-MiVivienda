@@ -14,4 +14,5 @@ public interface UsersService {
     UserResponseDTO getUserById(int id);
     UserResponseDTO updateCurrencyType(int id, String currencyType);
     Users findByUsername(String username);
+    Users findById(int id);
 }

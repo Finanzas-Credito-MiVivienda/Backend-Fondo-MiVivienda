@@ -11,11 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InmuebleRepository extends JpaRepository<Inmueble, Integer> {
-    //Buscar inmuebles por tipo de vivienda (CASA, DEPARTAMENTO, TERRENO)
-    List<Inmueble> findByTipo(TipoVivienda tipo);
-
-    //Buscar inmuebles por su estado (pendiente, vendido, reservado)
-    //List<Inmueble> findByEstado(EstadoInmueble estado);
+    //Buscar inmuebles por tipo de vivienda
+    List<Inmueble> findByTipoVivienda(TipoVivienda tipoVivienda);
 
     //Buscar un inmueble exacto por su dirección (coincidencia total)
     Optional<Inmueble> findByDireccion(String direccion);
@@ -43,7 +40,7 @@ public interface InmuebleRepository extends JpaRepository<Inmueble, Integer> {
                                                  @Param("max") BigDecimal max);
 
     //3️Buscar viviendas con área mínima y tipo de vivienda específico.
-    @Query("SELECT i FROM Inmueble i WHERE i.areaM2 >= :areaMin AND i.tipoDeVivienda = :tipo")
+    @Query("SELECT i FROM Inmueble i WHERE i.areaM2 >= :areaMin AND i.estadoVivienda = :tipo")
     List<Inmueble> buscarPorAreaYTipo(@Param("areaMin") BigDecimal areaMin,
                                       @Param("tipo") TipoVivienda tipo);
 

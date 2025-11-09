@@ -4,7 +4,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pe.edu.upc.backendfinanzas.dtos.InmuebleDTO;
+import pe.edu.upc.backendfinanzas.dtos.request.InmuebleRequestDTO;
+import pe.edu.upc.backendfinanzas.dtos.response.InmuebleResponseDTO;
 import pe.edu.upc.backendfinanzas.entities.Inmueble;
 import pe.edu.upc.backendfinanzas.entities.TipoVivienda;
 import pe.edu.upc.backendfinanzas.services.InmuebleService;
@@ -14,174 +15,162 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/Inmueble")
+@RequestMapping("/api/v1")
 public class InmuebleControllers {
     @Autowired
     private InmuebleService iS;
 
-    // Listar todos los inmuebles (ADMIN y CLIENT)
-    @GetMapping
+    @Autowired
+    private ModelMapper modelMapper;
+
+    // Listar todos los inmuebles
+    @GetMapping("/inmuebles")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
-    public List<InmuebleDTO> listar() {
-        return iS.list().stream().map(x -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(x, InmuebleDTO.class);
-        }).collect(Collectors.toList());
+    public List<InmuebleResponseDTO> listar() {
+        return iS.list().stream()
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
-    // Registrar inmueble (solo ADMIN)
-    @PostMapping
+    // Registrar inmueble
+    @PostMapping("/inmuebles")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public void registrar(@RequestBody InmuebleDTO dto) {
-        ModelMapper m = new ModelMapper();
-        Inmueble inmueble = m.map(dto, Inmueble.class);
-        iS.insert(inmueble);
+    public void registrar(@RequestBody InmuebleRequestDTO dto) {
+        Inmueble ofertaInmueble = modelMapper.map(dto, Inmueble.class);
+        iS.insert(ofertaInmueble);
     }
 
-    // Modificar inmueble (solo ADMIN)
-    @PutMapping
+    // Modificar inmueble
+    @PutMapping("/inmuebles/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public void modificar(@RequestBody InmuebleDTO dto) {
-        ModelMapper m = new ModelMapper();
-        Inmueble inmueble = m.map(dto, Inmueble.class);
-        iS.update(inmueble);
+    public void modificar(@PathVariable("id") Integer id, @RequestBody InmuebleRequestDTO dto) {
+        Inmueble ofertaInmueble = modelMapper.map(dto, Inmueble.class);
+        ofertaInmueble.setId(id);
+        iS.update(ofertaInmueble);
     }
 
-    // Eliminar inmueble (solo ADMIN)
-    @DeleteMapping("/{idInmueble}")
+    // Eliminar inmueble
+    @DeleteMapping("/inmuebles/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public void eliminar(@PathVariable("idInmueble") Integer idInmueble) {
-        iS.delete(idInmueble);
+    public void eliminar(@PathVariable("id") Integer id) {
+        iS.delete(id);
     }
 
-    // Buscar inmueble por ID (ADMIN y CLIENT)
-    @GetMapping("/{idInmueble}")
+    // Buscar por ID
+    @GetMapping("/inmuebles/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
-    public InmuebleDTO listarId(@PathVariable("idInmueble") Integer idInmueble) {
-        ModelMapper m = new ModelMapper();
-        return m.map(iS.listId(idInmueble), InmuebleDTO.class);
+    public InmuebleResponseDTO listarId(@PathVariable("id") Integer id) {
+        return modelMapper.map(iS.listId(id), InmuebleResponseDTO.class);
     }
 
     // Buscar por tipo de vivienda
-    @GetMapping("/tipo")
+    @GetMapping("/inmuebles/tipo")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
-    public List<InmuebleDTO> buscarPorTipo(@RequestParam TipoVivienda tipo) {
-        return iS.listByTipo(tipo).stream().map(x -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(x, InmuebleDTO.class);
-        }).collect(Collectors.toList());
+    public List<InmuebleResponseDTO> buscarPorTipo(@RequestParam TipoVivienda tipo) {
+        return iS.listByTipo(tipo).stream()
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     // Buscar por dirección exacta
-    @GetMapping("/direccionExacta")
+    @GetMapping("/inmuebles/direccionExacta")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
-    public InmuebleDTO buscarPorDireccion(@RequestParam String direccion) {
-        ModelMapper m = new ModelMapper();
+    public InmuebleResponseDTO buscarPorDireccion(@RequestParam String direccion) {
         return iS.findByDireccion(direccion)
-                .map(x -> m.map(x, InmuebleDTO.class))
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
                 .orElse(null);
     }
 
     // Buscar por palabra clave en dirección
-    @GetMapping("/direccion")
+    @GetMapping("/inmuebles/direccion")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
-    public List<InmuebleDTO> buscarPorDireccionParcial(@RequestParam String direccion) {
-        return iS.listByDireccionParcial(direccion).stream().map(x -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(x, InmuebleDTO.class);
-        }).collect(Collectors.toList());
+    public List<InmuebleResponseDTO> buscarPorDireccionParcial(@RequestParam String direccion) {
+        return iS.listByDireccionParcial(direccion).stream()
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     // Buscar por rango de precios
-    @GetMapping("/rango-precio")
+    @GetMapping("/inmuebles/rango-precio")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
-    public List<InmuebleDTO> buscarPorRangoPrecio(@RequestParam BigDecimal min, @RequestParam BigDecimal max) {
-        return iS.listByPrecioBetween(min, max).stream().map(x -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(x, InmuebleDTO.class);
-        }).collect(Collectors.toList());
+    public List<InmuebleResponseDTO> buscarPorRangoPrecio(@RequestParam BigDecimal min, @RequestParam BigDecimal max) {
+        return iS.listByPrecioBetween(min, max).stream()
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     // Buscar por área mínima
-    @GetMapping("/area-minima")
+    @GetMapping("/inmuebles/area-minima")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
-    public List<InmuebleDTO> buscarPorAreaMinima(@RequestParam BigDecimal areaMin) {
-        return iS.listByAreaMinima(areaMin).stream().map(x -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(x, InmuebleDTO.class);
-        }).collect(Collectors.toList());
+    public List<InmuebleResponseDTO> buscarPorAreaMinima(@RequestParam BigDecimal areaMin) {
+        return iS.listByAreaMinima(areaMin).stream()
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     // Buscar por departamento y provincia
-    @GetMapping("/ubicacion")
+    @GetMapping("/inmuebles/ubicacion")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
-    public List<InmuebleDTO> buscarPorDepProv(@RequestParam String departamento, @RequestParam String provincia) {
-        return iS.listByDepartamentoAndProvincia(departamento, provincia).stream().map(x -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(x, InmuebleDTO.class);
-        }).collect(Collectors.toList());
+    public List<InmuebleResponseDTO> buscarPorDepProv(@RequestParam String departamento, @RequestParam String provincia) {
+        return iS.listByDepartamentoAndProvincia(departamento, provincia).stream()
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     // Buscar por distrito y rango de precio
-    @GetMapping("/distrito-rango")
+    @GetMapping("/inmuebles/distrito-rango")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
-    public List<InmuebleDTO> buscarPorDistritoYRango(@RequestParam String distrito,
-                                                     @RequestParam BigDecimal min,
-                                                     @RequestParam BigDecimal max) {
-        return iS.listByDistritoYRangoPrecio(distrito, min, max).stream().map(x -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(x, InmuebleDTO.class);
-        }).collect(Collectors.toList());
+    public List<InmuebleResponseDTO> buscarPorDistritoYRango(@RequestParam String distrito,
+                                                             @RequestParam BigDecimal min,
+                                                             @RequestParam BigDecimal max) {
+        return iS.listByDistritoYRangoPrecio(distrito, min, max).stream()
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     // Buscar por área mínima y tipo
-    @GetMapping("/area-tipo")
+    @GetMapping("/inmuebles/area-tipo")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
-    public List<InmuebleDTO> buscarPorAreaYTipo(@RequestParam BigDecimal areaMin,
-                                                @RequestParam TipoVivienda tipo) {
-        return iS.listByAreaAndTipo(areaMin, tipo).stream().map(x -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(x, InmuebleDTO.class);
-        }).collect(Collectors.toList());
+    public List<InmuebleResponseDTO> buscarPorAreaYTipo(@RequestParam BigDecimal areaMin,
+                                                        @RequestParam TipoVivienda tipo) {
+        return iS.listByAreaAndTipo(areaMin, tipo).stream()
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     // Top 5 viviendas más costosas
-    @GetMapping("/top5")
+    @GetMapping("/inmuebles/top5")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
-    public List<InmuebleDTO> listarTop5() {
-        return iS.listTop5MasCaras().stream().map(x -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(x, InmuebleDTO.class);
-        }).collect(Collectors.toList());
+    public List<InmuebleResponseDTO> listarTop5() {
+        return iS.listTop5MasCaras().stream()
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     // Viviendas con precio superior al promedio
-    @GetMapping("/sobre-promedio")
+    @GetMapping("/inmuebles/sobre-promedio")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public List<InmuebleDTO> listarSobrePromedio() {
-        return iS.listSobrePrecioPromedio().stream().map(x -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(x, InmuebleDTO.class);
-        }).collect(Collectors.toList());
+    public List<InmuebleResponseDTO> listarSobrePromedio() {
+        return iS.listSobrePrecioPromedio().stream()
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     // Viviendas con créditos asociados
-    @GetMapping("/con-credito")
+    @GetMapping("/inmuebles/con-credito")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public List<InmuebleDTO> listarConCredito() {
-        return iS.listConCreditos().stream().map(x -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(x, InmuebleDTO.class);
-        }).collect(Collectors.toList());
+    public List<InmuebleResponseDTO> listarConCredito() {
+        return iS.listConCreditos().stream()
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     // Buscar viviendas por palabra clave en ubicación
-    @GetMapping("/buscar")
+    @GetMapping("/inmuebles/buscar")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
-    public List<InmuebleDTO> buscarPorUbicacion(@RequestParam String keyword) {
-        return iS.listByUbicacionGeneral(keyword).stream().map(x -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(x, InmuebleDTO.class);
-        }).collect(Collectors.toList());
+    public List<InmuebleResponseDTO> buscarPorUbicacion(@RequestParam String keyword) {
+        return iS.listByUbicacionGeneral(keyword).stream()
+                .map(x -> modelMapper.map(x, InmuebleResponseDTO.class))
+                .collect(Collectors.toList());
     }
 }
