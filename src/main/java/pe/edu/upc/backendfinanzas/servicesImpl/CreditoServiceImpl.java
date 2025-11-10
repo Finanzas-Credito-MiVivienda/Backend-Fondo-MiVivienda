@@ -203,13 +203,15 @@ public class CreditoServiceImpl implements CreditoService {
             else if (esIntegradorSost) bonoBuenPagador = BigDecimal.valueOf(17700);
             else if (esIntegradorTrad) bonoBuenPagador = BigDecimal.valueOf(11400);
         }
+        BigDecimal saldoFinanciar2 = previoVenta.subtract(descuento).subtract(bonoBuenPagador);
+        BigDecimal montoPrestado2 = saldoFinanciar2.add(gastosIniciales);
 
         CreditoResponseDTO CreditoResponseDTO = new CreditoResponseDTO();
         CreditoResponseDTO.setTasaInteres(tasaFinal);
         CreditoResponseDTO.setTipoTasaInteres(tipoTasaInteres);
         CreditoResponseDTO.setFrecuenciaPago(frecuenciaPago);
-        CreditoResponseDTO.setSaldoFinanciar(saldoFinanciar);
-        CreditoResponseDTO.setMontoPrestamo(montoPrestado);
+        CreditoResponseDTO.setSaldoFinanciar(saldoFinanciar2);
+        CreditoResponseDTO.setMontoPrestamo(montoPrestado2);
         CreditoResponseDTO.setNCuotasxAnio(NCuotasAnio);
         CreditoResponseDTO.setNTotalCuotas(NTotalCuotas);
         CreditoResponseDTO.setSeguroDegPerd(seguroDesgravPer.multiply(BigDecimal.valueOf(100)));

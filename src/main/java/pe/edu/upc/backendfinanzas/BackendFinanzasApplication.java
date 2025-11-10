@@ -54,6 +54,12 @@ public class BackendFinanzasApplication {
                         TipoVivienda.TRADICIONAL, EstadoVivienda.EN_CONSTRUCCION, "Lima",
                         "Surco","https://img10.naventcdn.com/avisos/resize/111/01/47/64/21/41/1200x1200/1561248856.jpg?isFirstImage=true",
                         null));
+
+                inmuebleRepository.save(new Inmueble(0, BigDecimal.valueOf(1150),
+                        BigDecimal.valueOf(180000), "Lima", "Pasaje Los Aquijes 118 Surco, Santiago de Surco",
+                        TipoVivienda.TRADICIONAL, EstadoVivienda.EN_CONSTRUCCION, "Lima",
+                        "Surco","https://img10.naventcdn.com/avisos/resize/111/01/47/64/21/41/1200x1200/1561248856.jpg?isFirstImage=true",
+                        null));
             }
         };
     }
