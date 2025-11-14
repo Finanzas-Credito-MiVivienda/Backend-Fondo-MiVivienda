@@ -6,7 +6,6 @@ import pe.edu.upc.backendfinanzas.dtos.request.CreditoRequestDTO;
 import pe.edu.upc.backendfinanzas.dtos.response.CreditoResponseDTO;
 import pe.edu.upc.backendfinanzas.entities.*;
 import pe.edu.upc.backendfinanzas.repositories.CreditoRepository;
-import pe.edu.upc.backendfinanzas.repositories.EntidadFinancieraRepository;
 import pe.edu.upc.backendfinanzas.services.CreditoService;
 import pe.edu.upc.backendfinanzas.services.EntidadFinancieraService;
 import pe.edu.upc.backendfinanzas.services.InmuebleService;
@@ -14,8 +13,8 @@ import pe.edu.upc.backendfinanzas.services.InmuebleService;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
-
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -29,17 +28,9 @@ public class CreditoServiceImpl implements CreditoService {
     @Autowired
     private InmuebleService inmuebleService;
 
-    @Autowired
-    private EntidadFinancieraRepository entidadFinancieraRepository;
-
     @Override
     public List<Credito> findAll() {
         return creditoRepository.findAll();
-    }
-
-    @Override
-    public Credito findById(int id) {
-        return creditoRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -58,26 +49,6 @@ public class CreditoServiceImpl implements CreditoService {
     }
 
     @Override
-    public List<Credito> findByUsuarioId(int usuarioId) {
-        return creditoRepository.findByUsuarioId(usuarioId);
-    }
-
-    @Override
-    public List<Credito> findByMontoPrestamoBetween(BigDecimal min, BigDecimal max) {
-        return creditoRepository.findByMontoPrestamoBetween(min, max);
-    }
-
-    @Override
-    public List<Credito> findByDepartamentoOProvincia(String departamento, String provincia) {
-        return creditoRepository.findByDepartamentoOProvincia(departamento, provincia);
-    }
-
-    @Override
-    public List<Credito> findCreditosSobrePromedio() {
-        return creditoRepository.findCreditosSobrePromedio();
-    }
-
-    @Override
     public CreditoResponseDTO calcularTasa(CreditoRequestDTO dto) {
         int idEntidadFinanciera = dto.getIdEntidadFinanciera();
         int idInmueble = dto.getIdInmueble();
@@ -89,7 +60,7 @@ public class CreditoServiceImpl implements CreditoService {
         Inmueble inmueble = inmuebleService.listId(idInmueble);
         TipoVivienda tipo = inmueble.getTipoVivienda();
 
-        BigDecimal nuevaTea = entidadFinanciera.getTea();
+        BigDecimal nuevaTea = dto.getTasaInteres();
 
         BigDecimal tasaFinal = BigDecimal.ZERO;
         MathContext mc = new MathContext(10, RoundingMode.HALF_UP);
@@ -162,8 +133,8 @@ public class CreditoServiceImpl implements CreditoService {
 
         BigDecimal seguroRiesgoPer = seguroRiesgo
                 .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)
-                .multiply(previoVenta)
-                .divide(BigDecimal.valueOf(NCuotasAnio), 10, RoundingMode.HALF_UP);
+                .multiply(BigDecimal.valueOf(capitalizacion))
+                .divide(BigDecimal.valueOf(360), 10, RoundingMode.HALF_UP);
 
         BigDecimal uno = BigDecimal.ONE;
         BigDecimal parte1 = uno.add(cok.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP));
@@ -203,10 +174,23 @@ public class CreditoServiceImpl implements CreditoService {
             else if (esIntegradorSost) bonoBuenPagador = BigDecimal.valueOf(17700);
             else if (esIntegradorTrad) bonoBuenPagador = BigDecimal.valueOf(11400);
         }
+
         BigDecimal saldoFinanciar2 = previoVenta.subtract(descuento).subtract(bonoBuenPagador);
         BigDecimal montoPrestado2 = saldoFinanciar2.add(gastosIniciales);
 
+        TipoPeriodoGracia tipoPeriodoGracia = dto.getTipoPeriodoGracia();
+        int periodoGracia = dto.getPeriodoGracia();
+
+        if (tipoPeriodoGracia == TipoPeriodoGracia.GRACIA_TOTAL || tipoPeriodoGracia == TipoPeriodoGracia.GRACIA_PARCIAL) {
+            if (periodoGracia < 1 || periodoGracia > 6) {
+                throw new IllegalArgumentException("El Periodo de Gracia debe ser entre 1 y 6");
+            }
+        } else if (tipoPeriodoGracia == TipoPeriodoGracia.NINGUNO) {
+            periodoGracia = 0;
+        }
+
         CreditoResponseDTO CreditoResponseDTO = new CreditoResponseDTO();
+
         CreditoResponseDTO.setTasaInteres(tasaFinal);
         CreditoResponseDTO.setTipoTasaInteres(tipoTasaInteres);
         CreditoResponseDTO.setFrecuenciaPago(frecuenciaPago);
@@ -215,9 +199,22 @@ public class CreditoServiceImpl implements CreditoService {
         CreditoResponseDTO.setNCuotasxAnio(NCuotasAnio);
         CreditoResponseDTO.setNTotalCuotas(NTotalCuotas);
         CreditoResponseDTO.setSeguroDegPerd(seguroDesgravPer.multiply(BigDecimal.valueOf(100)));
-        CreditoResponseDTO.setSeguroRiesgoPerd(seguroRiesgoPer);
+        CreditoResponseDTO.setSeguroRiesgoPerd(seguroRiesgoPer.multiply(BigDecimal.valueOf(100)));
         CreditoResponseDTO.setTasaDescuento(tasaDescuento.multiply(BigDecimal.valueOf(100)));
         CreditoResponseDTO.setBonoBuenPagador(bonoBuenPagador);
+
+        CreditoResponseDTO.setFechaInicio(LocalDate.now());
+        CreditoResponseDTO.setTipoTasaInteres(tipoTasaInteres);
+        CreditoResponseDTO.setPeriodoGracia(periodoGracia);
+        CreditoResponseDTO.setTipoPeriodoGracia(tipoPeriodoGracia);
+        CreditoResponseDTO.setNumeroAnios(dto.getNumeroAnios());
+        CreditoResponseDTO.setNumeroDiasxAnio(360);
+        CreditoResponseDTO.setPCuotalnicial(dto.getPCuotalnicial());
+
+        CreditoResponseDTO.setIdUsuario(dto.getIdUsuario());
+        CreditoResponseDTO.setIdEntidadFinanciera(dto.getIdEntidadFinanciera());
+        CreditoResponseDTO.setIdInmueble(dto.getIdInmueble());
+
         return CreditoResponseDTO;
     }
 }

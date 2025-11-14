@@ -18,8 +18,9 @@ public class InmuebleRequestDTO {
     private BigDecimal precioVenta;
     private String departamento;
     private String direccion;
-    private EstadoVivienda estadoVivienda;
     private TipoVivienda tipoVivienda;
     private String provincia;
     private String distrito;
+    private EstadoVivienda estadoVivienda;
+    private String imageUrl;
 }
