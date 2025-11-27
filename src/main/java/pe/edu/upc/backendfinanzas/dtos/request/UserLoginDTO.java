@@ -11,9 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserLoginDTO {
+    private  int id;
+
     @NotBlank(message = "Username cannot be blank")
     private String username;
 
     @NotBlank(message = "Password cannot be blank")
     private String password;
+
+    private String rol;
 }

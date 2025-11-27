@@ -8,7 +8,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.upc.backendfinanzas.dtos.TokenDTO;
 import pe.edu.upc.backendfinanzas.dtos.request.UserLoginDTO;
+import pe.edu.upc.backendfinanzas.dtos.request.UserRequestDTO;
 import pe.edu.upc.backendfinanzas.dtos.response.UserResponseDTO;
 import pe.edu.upc.backendfinanzas.entities.Users;
 import pe.edu.upc.backendfinanzas.security.JwtUtilService;
@@ -30,7 +32,6 @@ public class UsersControllers {
     @Autowired
     private UsersService usersService;
 
-    // URL: http://localhost:8080/api/v1/users
     @Transactional(readOnly = true)
     @GetMapping("/users")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
@@ -38,23 +39,20 @@ public class UsersControllers {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    // URL: http://localhost:8080/api/v1/users/{id}
     @Transactional(readOnly = true)
     @GetMapping("users/{id}")
-    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable int id) {
-        UserResponseDTO user = usersService.getUserById(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<Users> getUserById(@PathVariable int id) {
+        Users users = usersService.getUserById(id);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    // URL: http://localhost:8080/api/v1/users
     @Transactional
-    @PostMapping("/users")
+    @PostMapping("/users/registrar")
     public ResponseEntity<Users> createUser(@Valid @RequestBody Users user) {
         Users createdUser = usersService.createUser(user);
         return new ResponseEntity<>(createdUser, HttpStatus.OK);
     }
 
-    // URL: http://localhost:8080/api/v1/users/{id}
     @Transactional
     @DeleteMapping("/users/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
@@ -62,25 +60,28 @@ public class UsersControllers {
         return new ResponseEntity<>("Usuario eliminado correctamente", HttpStatus.OK);
     }
 
-    // URL: http://localhost:8080/api/v1/users/login
     @Transactional
     @PostMapping("/users/login")
-    public ResponseEntity<UserResponseDTO> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
-        UserResponseDTO response = usersService.login(userLoginDTO);
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                userLoginDTO.getUsername(), userLoginDTO.getPassword())
-        );
+    public ResponseEntity<TokenDTO> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLoginDTO.getUsername(), userLoginDTO.getPassword()));
         SecurityUser securityUser = new SecurityUser(usersService.findByUsername(userLoginDTO.getUsername()));
         String jwt = jwtUtilService.generateToken(securityUser);
+        int user_id = securityUser.getUser().getId();
 
         String authString = securityUser.getUser().getRoles().stream().map(a->a.getNameRol()).collect(Collectors.joining(";"));
 
-        response.setToken(jwt);
-        response.setAuthToken(authString);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new TokenDTO(jwt,user_id,authString),HttpStatus.OK);
     }
 
-    // URL: http://localhost:8080/api/v1/users/{id}/currency-type/{currencyType}
+    @PutMapping("/users/update/{id}")
+    public ResponseEntity<Users> updateUser(@PathVariable("id") int id, @Valid @RequestBody UserRequestDTO userRequestDTO) {
+        Users updatedUser = usersService.updateUser(id, userRequestDTO);
+        if (updatedUser != null) {
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+    }
+
     @Transactional
     @PutMapping("/users/{id}/currency-type/{currencyType}")
     public ResponseEntity<UserResponseDTO> updateCurrencyType(@PathVariable int id, @PathVariable String currencyType) {

@@ -1,9 +1,10 @@
 package pe.edu.upc.backendfinanzas.services;
 
+import pe.edu.upc.backendfinanzas.dtos.PlanPagosCronogramaDTO;
+import pe.edu.upc.backendfinanzas.dtos.PlanPagosTotalesDTO;
+import pe.edu.upc.backendfinanzas.entities.Credito;
 import pe.edu.upc.backendfinanzas.entities.Pago;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 public interface PagoService {
@@ -12,13 +13,9 @@ public interface PagoService {
     Pago update(Pago pago);
     Pago findById(int idPago);
     void delete(int idPago);
+    Credito obtenerCreditoPorId(int idCredito);
 
-    //Generar los pagos de un crédito (flujo mensual)
-    List<Pago> generarPagosPorCredito(int idCredito);
+    List<PlanPagosCronogramaDTO> generarCronograma(int idCredito);
 
-    //Listar todos los pagos de un crédito
-    List<Pago> findByCredito(int idCredito);
-
-    //Buscar pagos entre dos fechas dadas
-    List<Pago> findByFechaBetween(LocalDate inicio, LocalDate fin);
+    PlanPagosTotalesDTO calcularTotalesCronograma(int idCredito);
 }

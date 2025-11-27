@@ -24,72 +24,58 @@ public class Credito {
     @Column(name = "id")
     private int id;
 
-    // Monto Total prestado
-    // @NotNull(message = "El monto prestado es obligatorio")
+    @NotNull(message = "El monto prestado es obligatorio")
     @DecimalMin(value = "0.0", inclusive = false, message = "El monto debe ser mayor que 0")
     @Column(name = "monto_prestado", nullable = true, precision = 15, scale = 2)
     private BigDecimal montoPrestamo;
 
-    // Saldo Financiar
-    // @NotNull(message = "El saldo financiar es obligatorio")
+    @NotNull(message = "El saldo financiar es obligatorio")
     @DecimalMin(value = "0.0", inclusive = false, message = "El saldo financiar debe ser mayor que 0")
     @Column(name = "saldo_financiar", nullable = true, precision = 15, scale = 2)
     private BigDecimal saldoFinanciar;
 
-    // Tipo de tasa
     @NotNull(message = "El tipo de tasa es obligatorio")
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_tasa", nullable = true, length = 15)
-    private TipoTasaInteres tipoTasaInteres; // EFECTIVA, NOMINAL
+    private TipoTasaInteres tipoTasaInteres;
 
-    //Valor de la tasa de interes
     @NotNull(message = "La tasa de interés es obligatoria")
     @DecimalMin(value = "0.0", inclusive = false, message = "La tasa debe ser mayor que 0")
     @Column(name = "tasa_interes", nullable = true, precision = 12, scale = 7)
     private BigDecimal tasaInteres;
 
-    // Frecuencia de pago
-    // @NotNull(message = "La frecuencia de pago es obligatoria")
+    @NotNull(message = "La frecuencia de pago es obligatoria")
     @Enumerated(EnumType.STRING)
     @Column(name = "frecuencia_pago", nullable = true, length = 15)
-    private FrecuenciaPago frecuenciaPago; // MENSUAL, SEMESTRAL, ANUAL
+    private FrecuenciaPago frecuenciaPago;
 
-    // Fecha inicio del credito
-    // @NotNull(message = "La fecha de inicio es obligatoria")
+    @NotNull(message = "La fecha de inicio es obligatoria")
     @Column(name = "fecha_inicio", nullable = true)
     private LocalDate fechaInicio;
 
-    // Bono del Buen Pagador
-    // @NotNull(message = "El Bono del Buen Pagador es obligatorio para créditos MiVivienda")
+    @NotNull(message = "El Bono del Buen Pagador es obligatorio para créditos MiVivienda")
     @DecimalMin(value = "0.0", inclusive = false, message = "El Bono debe ser mayor que 0")
     @Column(name = "bono_buen_pagador", nullable = true, precision = 10, scale = 2)
     private BigDecimal bonoBuenPagador;
 
-    // Tipo Periodo de Gracia
-    // @NotNull(message = "El tipo periodo de gracia es obligatorio")
+    @NotNull(message = "El tipo periodo de gracia es obligatorio")
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_periodo_gracia", nullable = true, length = 15)
-    private TipoPeriodoGracia tipoPeriodoGracia; // NINGUNO, TOTAL, PARCIAL
+    private TipoPeriodoGracia tipoPeriodoGracia;
 
-    // Periodo de Gracia
-    // @NotNull(message = "El periodo de gracia es obligatorio")
+    @NotNull(message = "El periodo de gracia es obligatorio")
     @Column(name = "periodo_gracia", nullable = true)
     private int periodoGracia;
 
-    // NUEVOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
     @DecimalMin(value = "0.0", inclusive = true, message = "El porcentaje debe ser mayor o igual que 0")
-    @Column(name = "pCuotalnicial", precision = 5, scale = 2)
-    private BigDecimal pCuotalnicial;
+    @Column(name = "p_cuota_inicial", precision = 5, scale = 3)
+    private BigDecimal pCuotaInicial;
 
     @Column(name = "numeroAnios")
     private int numeroAnios;
 
     @Column(name = "numeroDiasxAnio")
     private int numeroDiasxAnio;
-
-    @DecimalMin(value = "0.0", inclusive = true, message = "El saldo debe ser mayor o igual que 0")
-    @Column(name = "saldoFinal", precision = 15, scale = 2)
-    private BigDecimal saldoFinal;
 
     @Column(name = "nCuotasxAnio")
     private int nCuotasxAnio;
@@ -113,16 +99,14 @@ public class Credito {
     @JoinColumn(name = "user_id", nullable = true)
     private Users usuario;
 
-    // Relación con Inmueble
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inmueble_id", nullable = true)
     private Inmueble inmueble;
 
-    // Relación con Pagos (una cuota por cada registro)
     @OneToMany(mappedBy = "credito", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pago> pagos;
 
-    // Relación con Entidad Financiera
-    @OneToOne(mappedBy = "credito", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entidad_financiera_id", nullable = true)
     private EntidadFinanciera entidadFinanciera;
 }

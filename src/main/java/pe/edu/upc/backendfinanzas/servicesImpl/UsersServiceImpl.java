@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import pe.edu.upc.backendfinanzas.dtos.request.UserLoginDTO;
+import pe.edu.upc.backendfinanzas.dtos.request.UserRequestDTO;
 import pe.edu.upc.backendfinanzas.dtos.response.UserResponseDTO;
 import pe.edu.upc.backendfinanzas.entities.Role;
 import pe.edu.upc.backendfinanzas.entities.Users;
@@ -14,6 +15,7 @@ import pe.edu.upc.backendfinanzas.repositories.RoleRepository;
 import pe.edu.upc.backendfinanzas.repositories.UsersRepository;
 import pe.edu.upc.backendfinanzas.services.UsersService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +49,101 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
+    public Users updateUser(int id, UserRequestDTO userRequestDTO) {
+        Users usersFound = getUserById(id);
+        if (usersFound != null) {
+            LocalDate today = LocalDate.now();
+
+            if(!userRequestDTO.getName().isBlank()){
+                if(userRequestDTO.getName().length()<=2){
+                    throw new ValidationException("El nombre del cliente no puede tener menos de tres caracteres");
+                }
+                usersFound.setName(userRequestDTO.getName());
+            }
+
+            if (!userRequestDTO.getLastName().isBlank()) {
+                if (userRequestDTO.getLastName().length() <= 2) {
+                    throw new ValidationException("El apellido no puede tener menos de tres caracteres");
+                }
+                usersFound.setLastName(userRequestDTO.getLastName());
+            }
+
+            if (!userRequestDTO.getAddress().isBlank()) {
+                if (userRequestDTO.getAddress().length() < 5) {
+                    throw new ValidationException("La dirección no puede tener menos de cinco caracteres");
+                }
+                usersFound.setAddress(userRequestDTO.getAddress());
+            }
+
+            if (!userRequestDTO.getEmail().isBlank()) {
+                if (!userRequestDTO.getEmail().contains("@")) {
+                    throw new ValidationException("Debe ingresar un correo válido");
+                }
+                usersFound.setEmail(userRequestDTO.getEmail());
+            }
+
+            if (userRequestDTO.getBirthday() != null) {
+                if (userRequestDTO.getBirthday().isAfter(today.minusYears(18))) {
+                    throw new ValidationException("Debe ser mayor de 18 años");
+                }
+                usersFound.setBirthday(userRequestDTO.getBirthday());
+            }
+
+            if (!userRequestDTO.getMaritalStatus().isBlank()) {
+                usersFound.setMaritalStatus(userRequestDTO.getMaritalStatus());
+            }
+
+            if (!userRequestDTO.getPhoneNumber().isBlank()) {
+                if (userRequestDTO.getPhoneNumber().length() != 9) {
+                    throw new ValidationException("El número de teléfono debe tener 9 dígitos");
+                }
+                usersFound.setPhoneNumber(userRequestDTO.getPhoneNumber());
+            }
+
+            if (userRequestDTO.getGender() != null) {
+                usersFound.setGender(userRequestDTO.getGender());
+            }
+
+            if (!userRequestDTO.getDni().isBlank()) {
+                if (userRequestDTO.getDni().length() != 8) {
+                    throw new ValidationException("El DNI debe tener 8 dígitos");
+                }
+                usersFound.setDni(userRequestDTO.getDni());
+            }
+
+            if (!userRequestDTO.getRuc().isBlank()) {
+                if (userRequestDTO.getRuc().length() != 11) {
+                    throw new ValidationException("El RUC debe tener 11 dígitos");
+                }
+                usersFound.setRuc(userRequestDTO.getRuc());
+            }
+
+            if (!userRequestDTO.getCurrencyType().isBlank()) {
+                if (!userRequestDTO.getCurrencyType().equals("PEN") &&
+                        !userRequestDTO.getCurrencyType().equals("USD")) {
+                    throw new ValidationException("Tipo de moneda inválido");
+                }
+                usersFound.setCurrencyType(userRequestDTO.getCurrencyType());
+            }
+
+            if (userRequestDTO.getMonthlyIncome() != null) {
+                if (userRequestDTO.getMonthlyIncome().doubleValue() < 0) {
+                    throw new ValidationException("El ingreso no puede ser negativo");
+                }
+                usersFound.setMonthlyIncome(userRequestDTO.getMonthlyIncome());
+            }
+
+            return usersRepository.save(usersFound);
+        }
+
+        if (!usersRepository.existsById(id)) {
+            throw new ResourceNotFoundException("El usuario no existe");
+        }
+
+        return null;
+    }
+
+    @Override
     public List<UserResponseDTO> getAllUsers() {
         List<Users> users = usersRepository.findAll();
         return users.stream()
@@ -72,11 +169,12 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public UserResponseDTO getUserById(int id) {
+    public Users getUserById(int id) {
         Users users = usersRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + id));
 
-        return modelMapper.map(users, UserResponseDTO.class);
+        return users;
+        //return modelMapper.map(users, UserResponseDTO.class);
     }
 
     @Override

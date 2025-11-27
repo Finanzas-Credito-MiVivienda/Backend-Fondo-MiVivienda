@@ -24,7 +24,6 @@ public class EntidadFinancieraControllers {
     @Autowired
     private ModelMapper modelMapper;
 
-    // Listar todas las entidades financieras
     @GetMapping("/entidades-financieras")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
     public List<EntidadFinancieraResponseDTO> listar() {
@@ -33,7 +32,6 @@ public class EntidadFinancieraControllers {
                 .collect(Collectors.toList());
     }
 
-    // Registrar una nueva entidad financiera
     @PostMapping("/entidades-financieras")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<EntidadFinanciera> registrar(@RequestBody EntidadFinancieraRequestDTO dto) {
@@ -41,7 +39,6 @@ public class EntidadFinancieraControllers {
         return new ResponseEntity<>(eFService.insert(entidad), HttpStatus.OK);
     }
 
-    // Modificar una entidad financiera existente
     @PutMapping("/entidades-financieras/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public void modificar(@PathVariable("id") Integer id, @RequestBody EntidadFinancieraRequestDTO dto) {
@@ -50,21 +47,18 @@ public class EntidadFinancieraControllers {
         eFService.update(entidad);
     }
 
-    // Eliminar una entidad financiera
     @DeleteMapping("/entidades-financieras/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public void eliminar(@PathVariable("id") Integer id) {
         eFService.delete(id);
     }
 
-    // Buscar por ID
     @GetMapping("/entidades-financieras/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
     public EntidadFinancieraResponseDTO listarPorId(@PathVariable("id") Integer id) {
         return modelMapper.map(eFService.listId(id), EntidadFinancieraResponseDTO.class);
     }
 
-    // Buscar por nombre exacto
     @GetMapping("/entidades-financieras/nombre-exacto")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
     public EntidadFinancieraResponseDTO buscarPorNombre(@RequestParam String nombre) {
@@ -73,7 +67,6 @@ public class EntidadFinancieraControllers {
                 .orElse(null);
     }
 
-    // Buscar por coincidencia parcial de nombre
     @GetMapping("/entidades-financieras/nombre")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
     public List<EntidadFinancieraResponseDTO> buscarPorNombreParcial(@RequestParam String nombre) {
@@ -82,7 +75,6 @@ public class EntidadFinancieraControllers {
                 .collect(Collectors.toList());
     }
 
-    // Buscar por TEA dentro de un rango
     @GetMapping("/entidades-financieras/rango-tea")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
     public List<EntidadFinancieraResponseDTO> buscarPorRangoTea(@RequestParam BigDecimal min,
@@ -92,7 +84,6 @@ public class EntidadFinancieraControllers {
                 .collect(Collectors.toList());
     }
 
-    // Buscar entidades con gastos de administración menores a un valor
     @GetMapping("/entidades-financieras/gastos-menores")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
     public List<EntidadFinancieraResponseDTO> buscarPorGastosMenores(@RequestParam BigDecimal valor) {
@@ -101,7 +92,6 @@ public class EntidadFinancieraControllers {
                 .collect(Collectors.toList());
     }
 
-    // Buscar entidades con seguro de desgravamen menor a un valor (consulta @Query)
     @GetMapping("/entidades-financieras/seguro-menor")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
     public List<EntidadFinancieraResponseDTO> buscarPorSeguroDesgravamenMenor(@RequestParam BigDecimal valor) {

@@ -2,7 +2,6 @@ package pe.edu.upc.backendfinanzas.controllers;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,23 +27,18 @@ public class CreditoControllers {
     @Autowired
     private ModelMapper modelMapper;
 
-    @PostMapping("/creditos/generarCredito")
-    public ResponseEntity<CreditoResponseDTO> generarCredito(@RequestBody CreditoRequestDTO dto){
-        CreditoResponseDTO creditoResponseDTO = creditoService.calcularTasa(dto);
-        return new ResponseEntity<>(creditoResponseDTO, HttpStatus.OK);
+    @PostMapping("/creditos/calcular-credito")
+    public ResponseEntity<CreditoResponseDTO> calcularCredito(@RequestBody CreditoRequestDTO dto) {
+        CreditoResponseDTO response = creditoService.calcularCredito(dto);
+        return ResponseEntity.ok(response);
     }
 
-    // Registrar crédito
-    @PostMapping("/creditos")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public void registrar(@RequestBody CreditoRequestDTO dto) {
-        Credito credito = modelMapper.map(dto, Credito.class);
-        credito.setUsuario(usersService.findById(dto.getIdUsuario()));
-        credito.setInmueble(inmuebleService.listId(dto.getIdInmueble()));
-        creditoService.insert(credito);
+    @PostMapping("/creditos/registrar-credito")
+    public ResponseEntity<CreditoResponseDTO> registrarCredito(@RequestBody CreditoRequestDTO dto) {
+        CreditoResponseDTO response = creditoService.registrarCredito(dto);
+        return ResponseEntity.ok(response);
     }
 
-    // Actualizar crédito
     @PutMapping("/creditos")
     @PreAuthorize("hasAuthority('ADMIN')")
     public void modificar(@RequestBody CreditoRequestDTO dto) {
@@ -54,7 +48,6 @@ public class CreditoControllers {
         creditoService.update(credito);
     }
 
-    // Eliminar crédito
     @DeleteMapping("/creditos/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public void eliminar(@PathVariable("id") int id) {

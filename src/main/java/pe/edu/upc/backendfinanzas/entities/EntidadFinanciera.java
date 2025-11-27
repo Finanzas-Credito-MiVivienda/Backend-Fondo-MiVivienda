@@ -44,47 +44,45 @@ public class EntidadFinanciera {
     private BigDecimal seguroRiesgo;
 
     @NotNull(message = "Los gastos de administración son obligatorios")
-    @Digits(integer = 15, fraction = 2, message = "Máximo 2 decimales permitidos")
-    @Column(name = "gastos_administracion", nullable = false, precision = 15, scale = 2)
+    @Digits(integer = 15, fraction = 3, message = "Máximo 3 decimales permitidos")
+    @Column(name = "gastos_administracion", nullable = false, precision = 15, scale = 3)
     private BigDecimal gastosAdministracion;
 
     @NotNull(message = "Los costes registrales son obligatorios")
-    @Digits(integer = 15, fraction = 2, message = "Máximo 2 decimales permitidos")
-    @Column(name = "costes_registrales", nullable = false, precision = 15, scale = 2)
+    @Digits(integer = 15, fraction = 3, message = "Máximo 3 decimales permitidos")
+    @Column(name = "costes_registrales", nullable = false, precision = 15, scale = 3)
     private BigDecimal costesRegistrales;
 
     @NotNull(message = "Los costes notariales son obligatorios")
-    @Digits(integer = 15, fraction = 2, message = "Máximo 2 decimales permitidos")
-    @Column(name = "costes_notariales", nullable = false, precision = 15, scale = 2)
+    @Digits(integer = 15, fraction = 3, message = "Máximo 3 decimales permitidos")
+    @Column(name = "costes_notariales", nullable = false, precision = 15, scale = 3)
     private BigDecimal costesNotariales;
 
     @NotNull(message = "El valor de tasación es obligatorio")
-    @Digits(integer = 15, fraction = 2, message = "Máximo 2 decimales permitidos")
-    @Column(name = "tasacion", nullable = false, precision = 15, scale = 2)
+    @Digits(integer = 15, fraction = 3, message = "Máximo 3 decimales permitidos")
+    @Column(name = "tasacion", nullable = false, precision = 15, scale = 3)
     private BigDecimal tasacion;
 
     @NotNull(message = "La comisión de estudio es obligatoria")
-    @Digits(integer = 15, fraction = 2, message = "Máximo 2 decimales permitidos")
-    @Column(name = "comision_estudio", nullable = false, precision = 15, scale = 2)
+    @Digits(integer = 15, fraction = 3, message = "Máximo 3 decimales permitidos")
+    @Column(name = "comision_estudio", nullable = false, precision = 15, scale = 3)
     private BigDecimal comisionEstudio;
 
     @NotNull(message = "La comisión de activación es obligatoria")
-    @Digits(integer = 15, fraction = 2, message = "Máximo 2 decimales permitidos")
-    @Column(name = "comision_activacion", nullable = false, precision = 15, scale = 2)
+    @Digits(integer = 15, fraction = 3, message = "Máximo 3 decimales permitidos")
+    @Column(name = "comision_activacion", nullable = false, precision = 15, scale = 3)
     private BigDecimal comisionActivacion;
 
     @NotNull(message = "El costo de portes es obligatorio")
-    @Digits(integer = 15, fraction = 2, message = "Máximo 2 decimales permitidos")
-    @Column(name = "portes", nullable = false, precision = 15, scale = 2)
+    @Digits(integer = 15, fraction = 3, message = "Máximo 3 decimales permitidos")
+    @Column(name = "portes", nullable = false, precision = 15, scale = 3)
     private BigDecimal portes;
 
     @NotNull(message = "La comisión periódica es obligatoria")
-    @Digits(integer = 15, fraction = 2, message = "Máximo 2 decimales permitidos")
-    @Column(name = "comision_periodica", nullable = false, precision = 15, scale = 2)
+    @Digits(integer = 15, fraction = 3, message = "Máximo 3 decimales permitidos")
+    @Column(name = "comision_periodica", nullable = false, precision = 15, scale = 3)
     private BigDecimal comisionPeriodica;
 
-    // Relación con la entidad CREDITO
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "credito_id", nullable = true, unique = true)
+    @OneToOne(mappedBy = "entidadFinanciera", fetch = FetchType.LAZY)
     private Credito credito;
 }

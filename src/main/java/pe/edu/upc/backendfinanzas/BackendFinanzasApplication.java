@@ -32,7 +32,7 @@ public class BackendFinanzasApplication {
                         null));
 
                 inmuebleRepository.save(new Inmueble(0, BigDecimal.valueOf(66),
-                        BigDecimal.valueOf(519000), "Lima", "Av. Cesar Vallejo 1445, Lince",
+                        BigDecimal.valueOf(519000), "Lima", "Av. Cesar Vallejo 1445",
                         TipoVivienda.SOSTENIBLE, EstadoVivienda.EN_CONSTRUCCION, "Lima",
                         "Lince","https://img10.naventcdn.com/avisos/resize/111/00/58/80/59/56/1200x1200/1562971826.jpg?isFirstImage=true",
                         null));
@@ -50,15 +50,39 @@ public class BackendFinanzasApplication {
                         null));
 
                 inmuebleRepository.save(new Inmueble(0, BigDecimal.valueOf(109),
-                        BigDecimal.valueOf(210641), "Lima", "Pasaje Los Aquijes 118 Surco, Santiago de Surco",
+                        BigDecimal.valueOf(210641), "Lima", "Pasaje Los Aquijes 118 Surco",
                         TipoVivienda.TRADICIONAL, EstadoVivienda.EN_CONSTRUCCION, "Lima",
                         "Surco","https://img10.naventcdn.com/avisos/resize/111/01/47/64/21/41/1200x1200/1561248856.jpg?isFirstImage=true",
                         null));
 
-                inmuebleRepository.save(new Inmueble(0, BigDecimal.valueOf(1150),
-                        BigDecimal.valueOf(180000), "Lima", "Pasaje Los Aquijes 118 Surco, Santiago de Surco",
+                inmuebleRepository.save(new Inmueble(0, BigDecimal.valueOf(244),
+                        BigDecimal.valueOf(180000), "Lima", "Malecon Armendariz al 100, Malecon Armendariz",
                         TipoVivienda.TRADICIONAL, EstadoVivienda.EN_CONSTRUCCION, "Lima",
-                        "Surco","https://img10.naventcdn.com/avisos/resize/111/01/47/64/21/41/1200x1200/1561248856.jpg?isFirstImage=true",
+                        "Miraflores","https://img10.naventcdn.com/avisos/resize/111/01/48/19/92/62/1200x1200/1572360803.jpg?isFirstImage=true",
+                        null));
+
+                inmuebleRepository.save(new Inmueble(0, BigDecimal.valueOf(380),
+                        BigDecimal.valueOf(230400), "Lima", "Calle Monte Carlo, Chacarilla Del Estanque",
+                        TipoVivienda.SOSTENIBLE, EstadoVivienda.TERRENO, "Lima",
+                        "Santiago de Surco","https://img10.naventcdn.com/avisos/resize/111/01/46/01/07/11/1200x1200/1539254426.jpg?isFirstImage=true",
+                        null));
+
+                inmuebleRepository.save(new Inmueble(0, BigDecimal.valueOf(56),
+                        BigDecimal.valueOf(281600), "Lima", "AV. Republica DE Chile 478 Jesus Maria",
+                        TipoVivienda.SOSTENIBLE, EstadoVivienda.CONSTRUIDO, "Lima",
+                        "Jesús María","https://img10.naventcdn.com/avisos/resize/111/01/47/68/63/84/1200x1200/1562116972.jpg?isFirstImage=true",
+                        null));
+
+                inmuebleRepository.save(new Inmueble(0, BigDecimal.valueOf(25),
+                        BigDecimal.valueOf(248500), "Lima", "Av. Los Ruiseñores 870 Santa Anita",
+                        TipoVivienda.INTEGRADOR_TRADICIONAL, EstadoVivienda.EN_CONSTRUCCION, "Lima",
+                        "Santa Anita","https://img10.naventcdn.com/avisos/resize/111/01/47/04/14/87/1200x1200/1546633939.jpg?isFirstImage=true",
+                        null));
+
+                inmuebleRepository.save(new Inmueble(0, BigDecimal.valueOf(52),
+                        BigDecimal.valueOf(280000), "Lima", "AV. PETIT THOUARS - Lince, Risso",
+                        TipoVivienda.INTEGRADOR_SOSTENIBLE, EstadoVivienda.CONSTRUIDO, "Lima",
+                        "Lince","https://img10.naventcdn.com/avisos/resize/111/00/66/16/98/42/1200x1200/1521057088.jpg?isFirstImage=true",
                         null));
             }
         };

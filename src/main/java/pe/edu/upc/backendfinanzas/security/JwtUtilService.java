@@ -14,9 +14,8 @@ import java.util.function.Function;
 
 @Service
 public class JwtUtilService {
-    // [Base64]
     private static final String JWT_SIGNATURE_KEY = "U1lTVEVNX0FQUExJQ0FUSU9OX1NPTFZFVElPTlNfU1lTVEVNX1NJR05BVFVSQV9TRUNVUklUWS9DQU5D";
-    private static final Long JWT_TOKEN_VALIDITY = 1000 * 60 * 60 * (long)3; // 3 horas de validez del token
+    private static final Long JWT_TOKEN_VALIDITY = 1000 * 60 * 60 * (long)3;
 
     private SecretKey getSigningKey(){
         byte[] decodedKey = Base64.getDecoder().decode(JWT_SIGNATURE_KEY);

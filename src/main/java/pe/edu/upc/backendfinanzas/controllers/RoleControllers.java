@@ -16,7 +16,6 @@ public class RoleControllers {
     @Autowired
     private RoleService roleService;
 
-    // URL: http://localhost:8080/api/v1/roles
     @Transactional(readOnly = true)
     @GetMapping("/roles")
     public ResponseEntity<List<Role>> getAllRoles() {
@@ -24,7 +23,6 @@ public class RoleControllers {
         return new ResponseEntity<>(roles, HttpStatus.OK);
     }
 
-    // URL: http://localhost:8080/api/v1/roles
     @Transactional
     @PostMapping("/roles")
     public ResponseEntity<Role> createRole(@RequestBody Role role) {

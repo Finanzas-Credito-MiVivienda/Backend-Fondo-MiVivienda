@@ -3,6 +3,7 @@ package pe.edu.upc.backendfinanzas.servicesImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pe.edu.upc.backendfinanzas.dtos.request.CreditoRequestDTO;
+import pe.edu.upc.backendfinanzas.dtos.request.UserRequestDTO;
 import pe.edu.upc.backendfinanzas.dtos.response.CreditoResponseDTO;
 import pe.edu.upc.backendfinanzas.entities.*;
 import pe.edu.upc.backendfinanzas.repositories.CreditoRepository;
@@ -49,7 +50,7 @@ public class CreditoServiceImpl implements CreditoService {
     }
 
     @Override
-    public CreditoResponseDTO calcularTasa(CreditoRequestDTO dto) {
+    public CreditoResponseDTO calcularCredito(CreditoRequestDTO dto) {
         int idEntidadFinanciera = dto.getIdEntidadFinanciera();
         int idInmueble = dto.getIdInmueble();
 
@@ -66,35 +67,27 @@ public class CreditoServiceImpl implements CreditoService {
         MathContext mc = new MathContext(10, RoundingMode.HALF_UP);
 
         int capitalizacion = 30;
-        if(tipoTasaInteres == TipoTasaInteres.NOMINAL){
-            if(frecuenciaPago != null){
-                if (frecuenciaPago == FrecuenciaPago.MENSUAL) {
-                    capitalizacion = 30;
-                }
-                else if (frecuenciaPago == FrecuenciaPago.BIMESTRAL) {
-                    capitalizacion = 60;
-                }
-                else if (frecuenciaPago == FrecuenciaPago.TRIMESTRAL) {
-                    capitalizacion = 90;
-                }
-                else if (frecuenciaPago == FrecuenciaPago.SEMESTRAL) {
-                    capitalizacion = 180;
-                }
-                else {
-                    capitalizacion = 360;
+        if (tipoTasaInteres == TipoTasaInteres.NOMINAL) {
+            if (frecuenciaPago != null) {
+                switch (frecuenciaPago) {
+                    case MENSUAL -> capitalizacion = 30;
+                    case BIMESTRAL -> capitalizacion = 60;
+                    case TRIMESTRAL -> capitalizacion = 90;
+                    case SEMESTRAL -> capitalizacion = 180;
+                    default -> capitalizacion = 360;
                 }
             }
-            // Conversión a nominal (ejemplo simplificado)
+
             BigDecimal m = BigDecimal.valueOf(360.0 / capitalizacion);
             BigDecimal n = BigDecimal.valueOf(30.0 / capitalizacion);
+
             BigDecimal parte1 = nuevaTea.divide(BigDecimal.valueOf(100), mc).divide(m, mc);
             BigDecimal parte2 = BigDecimal.ONE.add(parte1);
 
             double pow = Math.pow(parte2.doubleValue(), n.doubleValue());
             tasaFinal = BigDecimal.valueOf(pow - 1).multiply(BigDecimal.valueOf(100));
-        }
-        else {
-            // Cuando es EFECTIVO se calcula a TEM
+        } else {
+
             BigDecimal diasTEM = BigDecimal.valueOf(30);
             BigDecimal diasTEA = BigDecimal.valueOf(360);
 
@@ -104,7 +97,6 @@ public class CreditoServiceImpl implements CreditoService {
             double pow = Math.pow(parte1.doubleValue(), parte2.doubleValue());
             tasaFinal = BigDecimal.valueOf(pow - 1).multiply(BigDecimal.valueOf(100));
         }
-        System.out.println("Tasa Final Calculada: " + tasaFinal + "%");
 
         BigDecimal previoVenta = inmueble.getPrecioVenta();
         BigDecimal gastosIniciales = entidadFinanciera.getCostesRegistrales()
@@ -113,11 +105,12 @@ public class CreditoServiceImpl implements CreditoService {
                 .add(entidadFinanciera.getComisionActivacion())
                 .add(entidadFinanciera.getComisionEstudio());
 
-        BigDecimal descuento = previoVenta.multiply(dto.getPCuotalnicial()).divide(BigDecimal.valueOf(100));
+        BigDecimal descuento = previoVenta.multiply(dto.getPCuotaInicial()).divide(BigDecimal.valueOf(100));
         BigDecimal saldoFinanciar = previoVenta.subtract(descuento);
         BigDecimal montoPrestado = saldoFinanciar.add(gastosIniciales);
-        int NCuotasAnio = 360/capitalizacion;
-        int NTotalCuotas = NCuotasAnio*dto.getNumeroAnios();
+
+        int NCuotasAnio = 360 / capitalizacion;
+        int NTotalCuotas = NCuotasAnio * dto.getNumeroAnios();
 
         BigDecimal comisionPeriodica = entidadFinanciera.getComisionPeriodica();
         BigDecimal portes = entidadFinanciera.getPortes();
@@ -136,12 +129,11 @@ public class CreditoServiceImpl implements CreditoService {
                 .multiply(BigDecimal.valueOf(capitalizacion))
                 .divide(BigDecimal.valueOf(360), 10, RoundingMode.HALF_UP);
 
-        BigDecimal uno = BigDecimal.ONE;
-        BigDecimal parte1 = uno.add(cok.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP));
+        BigDecimal parte1 = BigDecimal.ONE.add(cok.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP));
         BigDecimal parte2 = BigDecimal.valueOf(capitalizacion).divide(BigDecimal.valueOf(360), 10, RoundingMode.HALF_UP);
         BigDecimal tasaDescuento = BigDecimal
                 .valueOf(Math.pow(parte1.doubleValue(), parte2.doubleValue()))
-                .subtract(uno);
+                .subtract(BigDecimal.ONE);
 
         BigDecimal bonoBuenPagador = BigDecimal.ZERO;
 
@@ -189,32 +181,104 @@ public class CreditoServiceImpl implements CreditoService {
             periodoGracia = 0;
         }
 
-        CreditoResponseDTO CreditoResponseDTO = new CreditoResponseDTO();
+        CreditoResponseDTO response = new CreditoResponseDTO();
 
-        CreditoResponseDTO.setTasaInteres(tasaFinal);
-        CreditoResponseDTO.setTipoTasaInteres(tipoTasaInteres);
-        CreditoResponseDTO.setFrecuenciaPago(frecuenciaPago);
-        CreditoResponseDTO.setSaldoFinanciar(saldoFinanciar2);
-        CreditoResponseDTO.setMontoPrestamo(montoPrestado2);
-        CreditoResponseDTO.setNCuotasxAnio(NCuotasAnio);
-        CreditoResponseDTO.setNTotalCuotas(NTotalCuotas);
-        CreditoResponseDTO.setSeguroDegPerd(seguroDesgravPer.multiply(BigDecimal.valueOf(100)));
-        CreditoResponseDTO.setSeguroRiesgoPerd(seguroRiesgoPer.multiply(BigDecimal.valueOf(100)));
-        CreditoResponseDTO.setTasaDescuento(tasaDescuento.multiply(BigDecimal.valueOf(100)));
-        CreditoResponseDTO.setBonoBuenPagador(bonoBuenPagador);
+        response.setTasaInteres(tasaFinal);
+        response.setTipoTasaInteres(tipoTasaInteres);
+        response.setFrecuenciaPago(frecuenciaPago);
+        response.setSaldoFinanciar(saldoFinanciar2);
+        response.setMontoPrestamo(montoPrestado2);
+        response.setNCuotasxAnio(NCuotasAnio);
+        response.setNTotalCuotas(NTotalCuotas);
+        response.setSeguroDegPerd(seguroDesgravPer.multiply(BigDecimal.valueOf(100)));
+        response.setSeguroRiesgoPerd(seguroRiesgoPer.multiply(BigDecimal.valueOf(100)));
+        response.setTasaDescuento(tasaDescuento.multiply(BigDecimal.valueOf(100)));
+        response.setBonoBuenPagador(bonoBuenPagador);
 
-        CreditoResponseDTO.setFechaInicio(LocalDate.now());
-        CreditoResponseDTO.setTipoTasaInteres(tipoTasaInteres);
-        CreditoResponseDTO.setPeriodoGracia(periodoGracia);
-        CreditoResponseDTO.setTipoPeriodoGracia(tipoPeriodoGracia);
-        CreditoResponseDTO.setNumeroAnios(dto.getNumeroAnios());
-        CreditoResponseDTO.setNumeroDiasxAnio(360);
-        CreditoResponseDTO.setPCuotalnicial(dto.getPCuotalnicial());
+        response.setFechaInicio(LocalDate.now());
+        response.setTipoTasaInteres(tipoTasaInteres);
+        response.setPeriodoGracia(periodoGracia);
+        response.setTipoPeriodoGracia(tipoPeriodoGracia);
+        response.setNumeroAnios(dto.getNumeroAnios());
+        response.setNumeroDiasxAnio(360);
+        response.setPCuotaInicial(dto.getPCuotaInicial());
 
-        CreditoResponseDTO.setIdUsuario(dto.getIdUsuario());
-        CreditoResponseDTO.setIdEntidadFinanciera(dto.getIdEntidadFinanciera());
-        CreditoResponseDTO.setIdInmueble(dto.getIdInmueble());
+        response.setIdUsuario(dto.getIdUsuario());
+        response.setIdEntidadFinanciera(dto.getIdEntidadFinanciera());
+        response.setIdInmueble(dto.getIdInmueble());
 
-        return CreditoResponseDTO;
+        response.setTeaOriginal(dto.getTasaInteres());
+
+        return response;
+    }
+
+    @Override
+    public CreditoResponseDTO registrarCredito(CreditoRequestDTO dto) {
+
+        CreditoResponseDTO response = this.calcularCredito(dto);
+
+        Credito credito = new Credito();
+
+        credito.setMontoPrestamo(response.getMontoPrestamo());
+        credito.setSaldoFinanciar(response.getSaldoFinanciar());
+        credito.setTipoTasaInteres(response.getTipoTasaInteres());
+        credito.setTasaInteres(response.getTasaInteres());
+        credito.setFrecuenciaPago(response.getFrecuenciaPago());
+        credito.setFechaInicio(LocalDate.now());
+        credito.setBonoBuenPagador(response.getBonoBuenPagador());
+        credito.setTipoPeriodoGracia(response.getTipoPeriodoGracia());
+        credito.setPeriodoGracia(response.getPeriodoGracia());
+        credito.setPCuotaInicial(response.getPCuotaInicial());
+        credito.setNumeroAnios(response.getNumeroAnios());
+        credito.setNumeroDiasxAnio(response.getNumeroDiasxAnio());
+        credito.setNCuotasxAnio(response.getNCuotasxAnio());
+        credito.setNTotalCuotas(response.getNTotalCuotas());
+        credito.setSeguroDegPerd(response.getSeguroDegPerd());
+        credito.setSeguroRiesgoPerd(response.getSeguroRiesgoPerd());
+        credito.setCok(dto.getCok());
+
+        // usuario
+        Users usuario = new Users();
+        usuario.setId(dto.getIdUsuario());
+        credito.setUsuario(usuario);
+
+        // inmueble
+        Inmueble inmueble = inmuebleService.listId(dto.getIdInmueble());
+        credito.setInmueble(inmueble);
+
+        // entidad financiera
+        EntidadFinanciera ef = entidadFinancieraService.listId(dto.getIdEntidadFinanciera());
+        ef.setCredito(credito);
+        credito.setEntidadFinanciera(ef);
+
+        Credito guardado = creditoRepository.save(credito);
+
+        CreditoResponseDTO finalResponse = new CreditoResponseDTO();
+
+        finalResponse.setId(guardado.getId());
+        finalResponse.setMontoPrestamo(guardado.getMontoPrestamo());
+        finalResponse.setSaldoFinanciar(guardado.getSaldoFinanciar());
+        finalResponse.setTipoTasaInteres(guardado.getTipoTasaInteres());
+        finalResponse.setTasaInteres(guardado.getTasaInteres());
+        finalResponse.setFrecuenciaPago(guardado.getFrecuenciaPago());
+        finalResponse.setFechaInicio(guardado.getFechaInicio());
+        finalResponse.setBonoBuenPagador(guardado.getBonoBuenPagador());
+        finalResponse.setTipoPeriodoGracia(guardado.getTipoPeriodoGracia());
+        finalResponse.setPeriodoGracia(guardado.getPeriodoGracia());
+        finalResponse.setPCuotaInicial(guardado.getPCuotaInicial());
+        finalResponse.setNumeroAnios(guardado.getNumeroAnios());
+        finalResponse.setNumeroDiasxAnio(guardado.getNumeroDiasxAnio());
+        finalResponse.setNCuotasxAnio(guardado.getNCuotasxAnio());
+        finalResponse.setNTotalCuotas(guardado.getNTotalCuotas());
+        finalResponse.setSeguroDegPerd(guardado.getSeguroDegPerd());
+        finalResponse.setSeguroRiesgoPerd(guardado.getSeguroRiesgoPerd());
+        finalResponse.setTasaDescuento(response.getTasaDescuento());
+
+        finalResponse.setIdUsuario(dto.getIdUsuario());
+        finalResponse.setIdEntidadFinanciera(dto.getIdEntidadFinanciera());
+        finalResponse.setIdInmueble(dto.getIdInmueble());
+        finalResponse.setTeaOriginal(dto.getTasaInteres());
+
+        return finalResponse;
     }
 }

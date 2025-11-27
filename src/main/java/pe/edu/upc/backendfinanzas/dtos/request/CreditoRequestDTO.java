@@ -14,21 +14,16 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreditoRequestDTO {
-    // Atributos de Credito
     private TipoTasaInteres tipoTasaInteres;
     private BigDecimal tasaInteres;
     private FrecuenciaPago frecuenciaPago;
     private LocalDate fechaInicio;
     private TipoPeriodoGracia tipoPeriodoGracia;
     private int periodoGracia;
-    private BigDecimal pCuotalnicial;
+    private BigDecimal pCuotaInicial;
     private int numeroAnios;
-    private BigDecimal cok; //preguntar si va en el modelo de base de datos
-
-    // Atributo de Usuario
+    private BigDecimal cok;
     private int idUsuario;
-    // Atributo de Entidad
     private int idEntidadFinanciera;
-    // Atributo de Inmueble
     private int idInmueble;
 }

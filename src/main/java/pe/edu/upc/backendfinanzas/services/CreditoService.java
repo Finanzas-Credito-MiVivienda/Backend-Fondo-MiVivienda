@@ -12,6 +12,6 @@ public interface CreditoService {
     Credito update(Credito credito);
     void delete(int id);
 
-    // Calcular tasa
-    CreditoResponseDTO calcularTasa(CreditoRequestDTO dto);
+    CreditoResponseDTO calcularCredito(CreditoRequestDTO dto);
+    CreditoResponseDTO registrarCredito(CreditoRequestDTO dto);
 }

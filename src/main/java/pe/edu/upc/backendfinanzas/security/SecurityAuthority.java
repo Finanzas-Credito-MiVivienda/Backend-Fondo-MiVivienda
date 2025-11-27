@@ -8,7 +8,6 @@ import pe.edu.upc.backendfinanzas.entities.Role;
 @Data
 @AllArgsConstructor
 public class SecurityAuthority implements GrantedAuthority {
-
     private Role authority;
 
     @Override
