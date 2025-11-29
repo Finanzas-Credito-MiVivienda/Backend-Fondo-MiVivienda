@@ -6,8 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import pe.edu.upc.backendfinanzas.entities.EstadoVivienda;
 import pe.edu.upc.backendfinanzas.entities.Inmueble;
+import pe.edu.upc.backendfinanzas.entities.Role;
 import pe.edu.upc.backendfinanzas.entities.TipoVivienda;
 import pe.edu.upc.backendfinanzas.repositories.InmuebleRepository;
+import pe.edu.upc.backendfinanzas.repositories.RoleRepository;
+import pe.edu.upc.backendfinanzas.services.RoleService;
 
 import java.math.BigDecimal;
 
@@ -20,10 +23,16 @@ public class BackendFinanzasApplication {
 
     @Bean
     public CommandLineRunner mappingDemo(
-            InmuebleRepository inmuebleRepository
-
+            InmuebleRepository inmuebleRepository,
+            RoleRepository roleRepository,
+            RoleService roleService
     ) {
         return args -> {
+            if (roleRepository.count() == 0) {
+                roleService.createRole(new Role(0, "ADMIN", null));
+                roleService.createRole(new Role(0, "CLIENT", null));
+            }
+
             if (inmuebleRepository.count() == 0) {
                 inmuebleRepository.save(new Inmueble(0, BigDecimal.valueOf(117),
                         BigDecimal.valueOf(195114), "Lima", "Icaro 164 Chorrillos",

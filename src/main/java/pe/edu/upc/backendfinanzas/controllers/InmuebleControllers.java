@@ -41,9 +41,13 @@ public class InmuebleControllers {
     @PutMapping("/inmuebles/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public void modificar(@PathVariable("id") Integer id, @RequestBody InmuebleRequestDTO dto) {
-        Inmueble ofertaInmueble = modelMapper.map(dto, Inmueble.class);
-        ofertaInmueble.setId(id);
-        iS.update(ofertaInmueble);
+        Inmueble existente = iS.listId(id);
+        if (existente == null || existente.getId() == 0) {
+            throw new RuntimeException("Inmueble no encontrado con id: " + id);
+        }
+
+        modelMapper.map(dto, existente);
+        iS.update(existente);
     }
 
     @DeleteMapping("/inmuebles/{id}")
