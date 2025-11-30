@@ -50,7 +50,7 @@ public class PagoControllers {
     }
 
     @GetMapping("/pagos/generar-cronograma/{idCredito}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
     public List<PlanPagosCronogramaDTO> generarCronograma(@PathVariable int idCredito) {
         return pagoService.generarCronograma(idCredito).stream()
                 .map(p -> modelMapper.map(p, PlanPagosCronogramaDTO.class))
@@ -58,6 +58,7 @@ public class PagoControllers {
     }
 
     @GetMapping("/pagos/cronograma/{idCredito}/totales")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
     public ResponseEntity<PlanPagosTotalesDTO> obtenerTotalesCronograma(@PathVariable int idCredito) {
         PlanPagosTotalesDTO totales = pagoService.calcularTotalesCronograma(idCredito);
         return ResponseEntity.ok(totales);

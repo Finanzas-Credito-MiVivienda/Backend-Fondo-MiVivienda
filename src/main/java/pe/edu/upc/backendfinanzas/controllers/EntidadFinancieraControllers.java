@@ -33,7 +33,7 @@ public class EntidadFinancieraControllers {
     }
 
     @PostMapping("/entidades-financieras")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
     public ResponseEntity<EntidadFinanciera> registrar(@RequestBody EntidadFinancieraRequestDTO dto) {
         EntidadFinanciera entidad = modelMapper.map(dto, EntidadFinanciera.class);
         return new ResponseEntity<>(eFService.insert(entidad), HttpStatus.OK);

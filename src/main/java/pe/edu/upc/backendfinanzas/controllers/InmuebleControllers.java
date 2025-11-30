@@ -39,7 +39,7 @@ public class InmuebleControllers {
     }
 
     @PutMapping("/inmuebles/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CLIENT')")
     public void modificar(@PathVariable("id") Integer id, @RequestBody InmuebleRequestDTO dto) {
         Inmueble existente = iS.listId(id);
         if (existente == null || existente.getId() == 0) {
